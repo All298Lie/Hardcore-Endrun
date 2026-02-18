@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class hcr extends JavaPlugin {
 
@@ -57,8 +58,7 @@ public class hcr extends JavaPlugin {
                 dataFile.createNewFile();
                 getLogger().info("새로운 data.yml 파일을 생성했습니다.");
             } catch (IOException e) {
-                getLogger().severe("data.yml 파일 생성 중 오류가 발생했습니다.");
-                e.printStackTrace();
+                getLogger().log(Level.SEVERE, "data.yml 파일 생성 중 오류가 발생했습니다.", e);
             }
         }
 
@@ -75,8 +75,7 @@ public class hcr extends JavaPlugin {
         try {
             dataConfig.save(dataFile);
         } catch (IOException e) {
-            getLogger().severe("data.yml 파일 저장 중 오류가 발생했습니다.");
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, "data.yml 파일 저장 중 오류가 발생했습니다.", e);
         }
     }
 }
