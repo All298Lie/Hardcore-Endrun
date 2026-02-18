@@ -1,17 +1,27 @@
 package dev.all298lie.hcr;
 
+import dev.all298lie.hcr.manager.ScoreboardManager;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
 public class hcr extends JavaPlugin {
-
     private File dataFile;
     private FileConfiguration dataConfig;
+
+    private ScoreboardManager scoreboardManager;
+
+    private boolean useScoreboard;
+
+    private boolean isCleared;
+    private boolean isStarted;
 
     // 플러그인이 켜졌을 경우
     @Override
@@ -22,7 +32,22 @@ public class hcr extends JavaPlugin {
         // 2. 기록용 파일 불러오기
         loadDataFile();
 
+        isStarted = (dataConfig.getInt("try_count", 0) > 0);
+        isCleared = dataConfig.getBoolean("is_cleared", false);
+
         // 3. 전용 스코어보드 설정
+        useScoreboard = getConfig().getBoolean("use_scoreboard", true);
+
+        if (useScoreboard) {
+            scoreboardManager = new ScoreboardManager(this);
+
+            startSystemTimer();
+
+            getLogger().info("설정이 활성화 되어있으므로, 스코어보드를 사용합니다.");
+        }
+        else {
+            getLogger().info("설정이 비활성화 되어있으므로, 스코어보드를 사용하지 않습니다.");
+        }
 
         // 4. 플러그인이 처음 실행된 것인지 확인
         int currentTry = dataConfig.getInt("try_count", 0);
@@ -65,6 +90,34 @@ public class hcr extends JavaPlugin {
         dataConfig = YamlConfiguration.loadConfiguration(dataFile);
     }
 
+    private void startSystemTimer() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // 게임을 클리어했거나, 시작되지 않은 경우, 리턴
+                if (isCleared || !isStarted) return;
+
+                int protectionTime = dataConfig.getInt("protection_time", 0);
+                int worldTime = dataConfig.getInt("world_time", 0);
+                int totalTime = dataConfig.getInt("total_time", 0);
+
+                // 1. 보호 시간 1초 차감
+                if (protectionTime > 0) {
+                    dataConfig.set("protection_time", protectionTime - 1);
+                }
+
+                // 2. 진행 시간 1초 증가
+                dataConfig.set("world_time", worldTime + 1);
+                dataConfig.set("total_time", totalTime + 1);
+
+                // 변경사항이 있다면 모든 온라인 플레이어의 스코어보드 화면 갱신
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    scoreboardManager.updateScoreboard(player);
+                }
+            }
+        }.runTaskTimer(this, 20L, 20L);
+    }
+
     // 데이터 파일 Getter 함수
     public FileConfiguration getDataConfig() {
         return this.dataConfig;
@@ -77,5 +130,9 @@ public class hcr extends JavaPlugin {
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "data.yml 파일 저장 중 오류가 발생했습니다.", e);
         }
+    }
+
+    public boolean useScoreboard() {
+        return useScoreboard;
     }
 }
