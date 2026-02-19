@@ -1,5 +1,6 @@
 package dev.all298lie.hcr;
 
+import dev.all298lie.hcr.listeners.GameClearListener;
 import dev.all298lie.hcr.manager.ScoreboardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,20 +21,17 @@ public class hcr extends JavaPlugin {
 
     private boolean useScoreboard;
 
-    private boolean isCleared;
-    private boolean isStarted;
-
     // 플러그인이 켜졌을 경우
     @Override
     public void onEnable() {
+        // 0. 이벤트 리스너 등록
+        getServer().getPluginManager().registerEvents(new GameClearListener(this), this);
+
         // 1. config.yml 파일 불러오기
         saveDefaultConfig();
 
         // 2. 기록용 파일 불러오기
         loadDataFile();
-
-        isStarted = (dataConfig.getInt("try_count", 0) > 0);
-        isCleared = dataConfig.getBoolean("is_cleared", false);
 
         // 3. 전용 스코어보드 설정
         useScoreboard = getConfig().getBoolean("use_scoreboard", true);
@@ -95,7 +93,8 @@ public class hcr extends JavaPlugin {
             @Override
             public void run() {
                 // 게임을 클리어했거나, 시작되지 않은 경우, 리턴
-                if (isCleared || !isStarted) return;
+                if (dataConfig.getBoolean("is_cleared", false)) return;
+                if (dataConfig.getInt("try_count", 0) < 1) return;
 
                 int protectionTime = dataConfig.getInt("protection_time", 0);
                 int worldTime = dataConfig.getInt("world_time", 0);
