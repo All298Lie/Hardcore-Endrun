@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.util.Iterator;
 
 public class WorldManager {
@@ -112,6 +113,30 @@ public class WorldManager {
         }.runTaskLater(plugin, 60L);
     }
 
+    public void removeOldWorlds(int tryCount) {
+        FileConfiguration data = plugin.getDataConfig();
+
+        int lastDeleted = data.getInt("last_deleted_try", 0);
+
+        // 지울게 없을 경우, 리턴
+        if (lastDeleted >= tryCount - 1) return;
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            for (int i = lastDeleted + 1; i < tryCount; i++) {
+                deleteFolder(new File(Bukkit.getWorldContainer(), "hcr_world_" + i));
+                deleteFolder(new File(Bukkit.getWorldContainer(), "hcr_nether_" + i));
+                deleteFolder(new File(Bukkit.getWorldContainer(), "hcr_the_end_" + i));
+                Bukkit.getLogger().info(i + "지구 월드 폴더를 물리적으로 삭제했습니다.");
+            }
+
+            // 삭제 후 삭제 번호 업데이트
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                data.set("last_deleted_try", tryCount - 1);
+                plugin.saveDataFile();
+            });
+        });
+    }
+
     // 플레이어 데이터 초기화 함수
     private void resetPlayerData(Player p) {
         p.getInventory().clear();
@@ -134,6 +159,25 @@ public class WorldManager {
             for (String criteria : progress.getAwardedCriteria()) {
                 progress.revokeCriteria(criteria);
             }
+        }
+    }
+
+    // 파일(폴더)를 삭제해주는 함수
+    private void deleteFolder(File folder) {
+        if (folder.exists()) {
+            File[] files = folder.listFiles();
+
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        deleteFolder(file);
+                    } else {
+                        file.delete();
+                    }
+                }
+            }
+
+            folder.delete();
         }
     }
 }

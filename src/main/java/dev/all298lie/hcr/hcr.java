@@ -52,16 +52,19 @@ public class hcr extends JavaPlugin {
         }
 
         // 4. 플러그인이 처음 실행된 것인지 확인
-        int currentTry = dataConfig.getInt("try_count", 0);
+        int tryCount = dataConfig.getInt("try_count", 0);
 
-        if (currentTry > 0) {
-            getLogger().info("진행중이던 " + currentTry + "지구를 로드하였습니다.");
+        if (tryCount > 0) {
+            getLogger().info("진행중이던 " + tryCount + "지구를 로드하였습니다.");
         }
         else {
             getLogger().info("하드코어 엔더런을 진행한 기록을 확인하지 못했습니다. /hcr start 명령어 실행 시 하드코어 엔더런을 시작합니다.");
         }
 
         // 5. 기존에 실패한 월드 삭제
+        if (tryCount > 0) {
+            worldManager.removeOldWorlds(tryCount);
+        }
 
         getLogger().info("하드코어 엔더런 플러그인이 활성화 되었습니다.");
     }
