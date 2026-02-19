@@ -2,6 +2,7 @@ package dev.all298lie.hcr;
 
 import dev.all298lie.hcr.listeners.GameClearListener;
 import dev.all298lie.hcr.manager.ScoreboardManager;
+import dev.all298lie.hcr.manager.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,6 +19,7 @@ public class hcr extends JavaPlugin {
     private FileConfiguration dataConfig;
 
     private ScoreboardManager scoreboardManager;
+    private WorldManager worldManager;
 
     private boolean useScoreboard;
 
@@ -26,6 +28,8 @@ public class hcr extends JavaPlugin {
     public void onEnable() {
         // 0. 이벤트 리스너 등록
         getServer().getPluginManager().registerEvents(new GameClearListener(this), this);
+
+        worldManager = new WorldManager(this);
 
         // 1. config.yml 파일 불러오기
         saveDefaultConfig();
@@ -48,16 +52,19 @@ public class hcr extends JavaPlugin {
         }
 
         // 4. 플러그인이 처음 실행된 것인지 확인
-        int currentTry = dataConfig.getInt("try_count", 0);
+        int tryCount = dataConfig.getInt("try_count", 0);
 
-        if (currentTry > 0) {
-            getLogger().info("진행중이던 " + currentTry + "지구를 로드하였습니다.");
+        if (tryCount > 0) {
+            getLogger().info("진행중이던 " + tryCount + "지구를 로드하였습니다.");
         }
         else {
             getLogger().info("하드코어 엔더런을 진행한 기록을 확인하지 못했습니다. /hcr start 명령어 실행 시 하드코어 엔더런을 시작합니다.");
         }
 
         // 5. 기존에 실패한 월드 삭제
+        if (tryCount > 0) {
+            worldManager.removeOldWorlds(tryCount);
+        }
 
         getLogger().info("하드코어 엔더런 플러그인이 활성화 되었습니다.");
     }
@@ -94,6 +101,7 @@ public class hcr extends JavaPlugin {
             public void run() {
                 // 게임을 클리어했거나, 시작되지 않은 경우, 리턴
                 if (dataConfig.getBoolean("is_cleared", false)) return;
+                if (dataConfig.getBoolean("is_generating", false)) return;
                 if (dataConfig.getInt("try_count", 0) < 1) return;
 
                 int protectionTime = dataConfig.getInt("protection_time", 0);
@@ -133,5 +141,9 @@ public class hcr extends JavaPlugin {
 
     public boolean useScoreboard() {
         return useScoreboard;
+    }
+
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
     }
 }

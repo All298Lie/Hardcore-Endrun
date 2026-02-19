@@ -53,11 +53,11 @@ public class ScoreboardManager {
         if (protectionTime > 0) {
             updateTeamText(board, "grace_time", "§f보호 시간: ", "§a" + formatTime(protectionTime));
         } else {
-            updateTeamText(board, "grace_time", "§f보호 시간: ", "§8종료됨");
+            updateTeamText(board, "grace_time", "§f보호 시간: ", "§c종료됨");
         }
 
-        updateTeamText(board, "world_time", "§f월드 시간: ", "§b" + formatTime(worldTime));
-        updateTeamText(board, "total_time", "§f토탈 시간: ", "§b" + formatTime(totalTime));
+        updateTeamText(board, "world_time", "§f월드 시간: ", "§f" + formatTime(worldTime));
+        updateTeamText(board, "total_time", "§f토탈 시간: ", "§f" + formatTime(totalTime));
     }
 
     // Team 생성 함수
