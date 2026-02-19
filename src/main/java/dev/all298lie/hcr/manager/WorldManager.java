@@ -66,11 +66,11 @@ public class WorldManager {
                     wcEnd.seed(seedToUse);
                 }
 
-                Bukkit.getLogger().info(newTryCount + "지구 오버월드 생성 시작...");
+                plugin.getLogger().info(newTryCount + "지구 오버월드 생성 시작...");
                 World newOverworld = Bukkit.createWorld(wcOverworld);
-                Bukkit.getLogger().info(newTryCount + "지구 네더 생성 시작...");
+                plugin.getLogger().info(newTryCount + "지구 네더 생성 시작...");
                 World newNether = Bukkit.createWorld(wcNether);
-                Bukkit.getLogger().info(newTryCount + "지구 엔드 생성 시작...");
+                plugin.getLogger().info(newTryCount + "지구 엔드 생성 시작...");
                 World newEnd = Bukkit.createWorld(wcEnd);
 
                 // 2. 월드 스폰 지점 확인 및 저장
@@ -107,7 +107,7 @@ public class WorldManager {
                     Bukkit.unloadWorld("hcr_world_" + tryCount, false);
                     Bukkit.unloadWorld("hcr_nether_" + tryCount, false);
                     Bukkit.unloadWorld("hcr_the_end_" + tryCount, false);
-                    Bukkit.getLogger().info(tryCount + "지구 월드를 메모리에서 언로드했습니다.");
+                    plugin.getLogger().info(tryCount + "지구 월드를 메모리에서 언로드했습니다.");
                 }
             }
         }.runTaskLater(plugin, 60L);
@@ -126,7 +126,7 @@ public class WorldManager {
                 deleteFolder(new File(Bukkit.getWorldContainer(), "hcr_world_" + i));
                 deleteFolder(new File(Bukkit.getWorldContainer(), "hcr_nether_" + i));
                 deleteFolder(new File(Bukkit.getWorldContainer(), "hcr_the_end_" + i));
-                Bukkit.getLogger().info(i + "지구 월드 폴더를 물리적으로 삭제했습니다.");
+                plugin.getLogger().info(i + "지구 월드 폴더를 물리적으로 삭제했습니다.");
             }
 
             // 삭제 후 삭제 번호 업데이트
