@@ -2,6 +2,7 @@ package dev.all298lie.hcr;
 
 import dev.all298lie.hcr.listeners.GameClearListener;
 import dev.all298lie.hcr.manager.ScoreboardManager;
+import dev.all298lie.hcr.manager.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,6 +19,7 @@ public class hcr extends JavaPlugin {
     private FileConfiguration dataConfig;
 
     private ScoreboardManager scoreboardManager;
+    private WorldManager worldManager;
 
     private boolean useScoreboard;
 
@@ -26,6 +28,8 @@ public class hcr extends JavaPlugin {
     public void onEnable() {
         // 0. 이벤트 리스너 등록
         getServer().getPluginManager().registerEvents(new GameClearListener(this), this);
+
+        worldManager = new WorldManager(this);
 
         // 1. config.yml 파일 불러오기
         saveDefaultConfig();
@@ -94,6 +98,7 @@ public class hcr extends JavaPlugin {
             public void run() {
                 // 게임을 클리어했거나, 시작되지 않은 경우, 리턴
                 if (dataConfig.getBoolean("is_cleared", false)) return;
+                if (dataConfig.getBoolean("is_generating", false)) return;
                 if (dataConfig.getInt("try_count", 0) < 1) return;
 
                 int protectionTime = dataConfig.getInt("protection_time", 0);
@@ -133,5 +138,9 @@ public class hcr extends JavaPlugin {
 
     public boolean useScoreboard() {
         return useScoreboard;
+    }
+
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
     }
 }
