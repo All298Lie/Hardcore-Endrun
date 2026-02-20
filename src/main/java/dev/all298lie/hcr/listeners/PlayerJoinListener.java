@@ -73,7 +73,12 @@ public class PlayerJoinListener implements Listener {
 
         World world = Bukkit.getWorld("hcr_world_" + tryCount);
         if (world != null) {
-            player.teleport(new Location(world, x, y, z));
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                player.teleport(new Location(world, x, y, z));
+                player.setFallDistance(0);
+            }, 1L);
+        } else {
+            plugin.getLogger().warning("텔레포트 실패 : hcr_world_" + tryCount + "월드를 찾을 수 없습니다.");
         }
     }
 }

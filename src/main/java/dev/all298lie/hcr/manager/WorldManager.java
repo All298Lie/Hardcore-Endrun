@@ -16,6 +16,8 @@ public class WorldManager {
 
     public WorldManager(hcr plugin) {
         this.plugin = plugin;
+
+        loadExistingWorlds();
     }
 
     // 월드 리셋 함수
@@ -165,6 +167,37 @@ public class WorldManager {
             }
 
             folder.delete();
+        }
+    }
+
+    private void loadExistingWorlds() {
+        int tryCount = plugin.getDataConfig().getInt("try_count", 0);
+
+        if (tryCount > 0) {
+            plugin.getLogger().info("진행 중이던 " + tryCount + "지구가 존재하므로, 메모리에서 로드를 시작합니다.");
+
+            org.bukkit.WorldCreator wcOverworld = new org.bukkit.WorldCreator("hcr_world_" + tryCount).environment(org.bukkit.World.Environment.NORMAL);
+            org.bukkit.WorldCreator wcNether = new org.bukkit.WorldCreator("hcr_nether_" + tryCount).environment(org.bukkit.World.Environment.NETHER);
+            org.bukkit.WorldCreator wcEnd = new org.bukkit.WorldCreator("hcr_the_end_" + tryCount).environment(org.bukkit.World.Environment.THE_END);
+
+            if (plugin.getConfig().getBoolean("lock_seed", false)) {
+                long savedSeed = plugin.getDataConfig().getLong("fixed_seed", 0);
+                if (savedSeed != 0) {
+                    wcOverworld.seed(savedSeed);
+                    wcNether.seed(savedSeed);
+                    wcEnd.seed(savedSeed);
+                }
+            }
+
+            org.bukkit.World loadedOverworld = Bukkit.createWorld(wcOverworld);
+            org.bukkit.World loadedNether = Bukkit.createWorld(wcNether);
+            org.bukkit.World loadedEnd = Bukkit.createWorld(wcEnd);
+
+            if (loadedOverworld != null) loadedOverworld.setDifficulty(org.bukkit.Difficulty.HARD);
+            if (loadedNether != null) loadedNether.setDifficulty(org.bukkit.Difficulty.HARD);
+            if (loadedEnd != null) loadedEnd.setDifficulty(org.bukkit.Difficulty.HARD);
+
+            plugin.getLogger().info(tryCount + "지구 로드 및 난이도 설정 완료!");
         }
     }
 }
