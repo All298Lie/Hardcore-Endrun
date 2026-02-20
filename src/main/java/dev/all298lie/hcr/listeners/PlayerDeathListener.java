@@ -37,6 +37,13 @@ public class PlayerDeathListener implements Listener {
         int protectionTime = plugin.getDataConfig().getInt("protection_time", 0);
         if (protectionTime > 0) {
             player.sendMessage(Component.text("§f[§a안내§f] 초반 보호 시간 중이므로 목숨이 깎이지 않았습니다!"));
+
+            // 플레이어가 리스폰하지 않았다면 강제 리스폰
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (player.isDead()) {
+                    player.spigot().respawn();
+                }
+            }, 1L);
             return;
         }
 
@@ -68,6 +75,13 @@ public class PlayerDeathListener implements Listener {
 
             worldManager.resetAndCreateWorld(tryCount + 1);
         }
+
+        // 플레이어가 리스폰하지 않았다면 강제 리스폰
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (player.isDead()) {
+                player.spigot().respawn();
+            }
+        }, 1L);
     }
 
     @EventHandler

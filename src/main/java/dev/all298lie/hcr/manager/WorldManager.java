@@ -92,6 +92,7 @@ public class WorldManager {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerUtil.resetPlayerData(p);
                     p.teleport(spawnLoc);
+                    p.setFallDistance(0);
                     p.setGameMode(GameMode.SURVIVAL);
                     p.showTitle(net.kyori.adventure.title.Title.title(
                             Component.text("§a§l" + newTryCount + "지구"),
