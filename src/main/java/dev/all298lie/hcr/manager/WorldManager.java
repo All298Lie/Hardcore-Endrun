@@ -72,6 +72,10 @@ public class WorldManager {
                 plugin.getLogger().info(newTryCount + "지구 엔드 생성 시작...");
                 World newEnd = Bukkit.createWorld(wcEnd);
 
+                newOverworld.setDifficulty(Difficulty.HARD);
+                newNether.setDifficulty(Difficulty.HARD);
+                newEnd.setDifficulty(Difficulty.HARD);
+
                 // 2. 월드 스폰 지점 확인 및 저장
                 Location spawnLoc = newOverworld.getSpawnLocation();
                 data.set("spawn_x", spawnLoc.getX());
@@ -80,7 +84,9 @@ public class WorldManager {
 
                 // 3. 접속 중인 플레이어 데이터 초기화 및 텔레포트, 스코어보드 갱신
                 ArrayList<String> players = new ArrayList<>();
+                boolean useScoreboard = plugin.getConfig().getBoolean("use_scoreboard", true);
 
+                newOverworld.getChunkAt(newOverworld.getSpawnLocation()).load();
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerUtil.resetPlayerData(p);
                     p.teleport(spawnLoc);
@@ -91,7 +97,9 @@ public class WorldManager {
                     ));
 
                     players.add(p.getUniqueId().toString());
-                    plugin.getScoreboardManager().updateScoreboard(p);
+                    if (useScoreboard) {
+                        plugin.getScoreboardManager().applyScoreboard(p);
+                    }
                 }
 
                 data.set("joined_players", players);
