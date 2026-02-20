@@ -20,14 +20,14 @@ public class ScoreboardManager {
     public void applyScoreboard(Player player) {
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
 
-        Objective obj = board.registerNewObjective("hcr_board", Criteria.DUMMY, toComponent("§f[ HCR ]"));
+        Objective obj = board.registerNewObjective("hcr_board", Criteria.DUMMY, toComponent("§f[ §c§lHCR §f]"));
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        createTeam(board, "try_count", "§a", 5);
-        createTeam(board, "life", "§c", 4);
-        createTeam(board, "protection_time", "§f", 3);
-        createTeam(board, "world_time", "§f", 2);
-        createTeam(board, "total_time", "§f", 1);
+        createTeam(board, "try_count", "§5", 5);
+        createTeam(board, "life", "§4", 4);
+        createTeam(board, "protection_time", "§3", 3);
+        createTeam(board, "world_time", "§2", 2);
+        createTeam(board, "total_time", "§1", 1);
 
         player.setScoreboard(board);
         updateScoreboard(player);
@@ -51,9 +51,9 @@ public class ScoreboardManager {
         updateTeamText(board, "life", "§f남은 목숨: ", "§c" + life + "개");
 
         if (protectionTime > 0) {
-            updateTeamText(board, "grace_time", "§f보호 시간: ", "§a" + formatTime(protectionTime));
+            updateTeamText(board, "protection_time", "§f보호 시간: ", "§a" + formatTime(protectionTime));
         } else {
-            updateTeamText(board, "grace_time", "§f보호 시간: ", "§c종료됨");
+            updateTeamText(board, "protection_time", "§f보호 시간: ", "§c종료됨");
         }
 
         updateTeamText(board, "world_time", "§f월드 시간: ", "§f" + formatTime(worldTime));
