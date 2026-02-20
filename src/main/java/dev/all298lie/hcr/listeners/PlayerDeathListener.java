@@ -4,11 +4,14 @@ import dev.all298lie.hcr.hcr;
 import dev.all298lie.hcr.manager.WorldManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class PlayerDeathListener implements Listener {
     private final hcr plugin;
@@ -64,6 +67,25 @@ public class PlayerDeathListener implements Listener {
             }
 
             worldManager.resetAndCreateWorld(tryCount + 1);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        int tryCount = plugin.getDataConfig().getInt("try_count");
+
+        if (tryCount > 0) {
+            World world = Bukkit.getWorld("hcr_world_" + tryCount);
+
+            if (event.getRespawnLocation().getWorld().getName().equals("hcr_world_" + tryCount)) return;
+
+            if (world != null) {
+                double x = plugin.getDataConfig().getDouble("spawn_x");
+                double y = plugin.getDataConfig().getDouble("spawn_y");
+                double z = plugin.getDataConfig().getDouble("spawn_z");
+
+                event.setRespawnLocation(new Location(world, x, y, z));
+            }
         }
     }
 }
