@@ -1,6 +1,7 @@
 package dev.all298lie.hcr;
 
 import dev.all298lie.hcr.listeners.GameClearListener;
+import dev.all298lie.hcr.listeners.PlayerDeathListener;
 import dev.all298lie.hcr.listeners.PortalListener;
 import dev.all298lie.hcr.manager.ScoreboardManager;
 import dev.all298lie.hcr.manager.WorldManager;
@@ -30,6 +31,7 @@ public class hcr extends JavaPlugin {
         // 0. 이벤트 리스너 등록
         getServer().getPluginManager().registerEvents(new GameClearListener(this), this);
         getServer().getPluginManager().registerEvents(new PortalListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(this, worldManager), this);
 
         worldManager = new WorldManager(this);
 
