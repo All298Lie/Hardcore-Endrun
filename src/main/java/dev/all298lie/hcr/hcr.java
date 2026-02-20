@@ -1,6 +1,7 @@
 package dev.all298lie.hcr;
 
 import dev.all298lie.hcr.listeners.GameClearListener;
+import dev.all298lie.hcr.listeners.PortalListener;
 import dev.all298lie.hcr.manager.ScoreboardManager;
 import dev.all298lie.hcr.manager.WorldManager;
 import org.bukkit.Bukkit;
@@ -28,6 +29,7 @@ public class hcr extends JavaPlugin {
     public void onEnable() {
         // 0. 이벤트 리스너 등록
         getServer().getPluginManager().registerEvents(new GameClearListener(this), this);
+        getServer().getPluginManager().registerEvents(new PortalListener(this), this);
 
         worldManager = new WorldManager(this);
 
