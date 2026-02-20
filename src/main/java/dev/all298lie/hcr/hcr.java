@@ -3,6 +3,7 @@ package dev.all298lie.hcr;
 import dev.all298lie.hcr.commands.HcrCommand;
 import dev.all298lie.hcr.listeners.GameClearListener;
 import dev.all298lie.hcr.listeners.PlayerDeathListener;
+import dev.all298lie.hcr.listeners.PlayerJoinListener;
 import dev.all298lie.hcr.listeners.PortalListener;
 import dev.all298lie.hcr.manager.ScoreboardManager;
 import dev.all298lie.hcr.manager.WorldManager;
@@ -35,6 +36,7 @@ public class hcr extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GameClearListener(this), this);
         getServer().getPluginManager().registerEvents(new PortalListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this, worldManager), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 
         getCommand("hcr").setExecutor(new HcrCommand(this, worldManager));
 
