@@ -1,6 +1,7 @@
 package dev.all298lie.hcr.listeners;
 
 import dev.all298lie.hcr.hcr;
+import dev.all298lie.hcr.utils.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -43,7 +44,7 @@ public class PlayerJoinListener implements Listener {
         if (!players.contains(playerUUID)) {
             player.setGameMode(GameMode.SPECTATOR);
 
-            resetPlayerData(player);
+            PlayerUtil.resetPlayerData(player);
             teleportToSpawn(player, tryCount);
 
             player.setGameMode(GameMode.SURVIVAL);
@@ -60,10 +61,6 @@ public class PlayerJoinListener implements Listener {
                 player.sendMessage("§f잘못된 세계에 있어 " + tryCount + "지구 스폰으로 이동되었습니다.");
             }
         }
-    }
-
-    private void resetPlayerData(Player player) {
-        // 플레이어 데이터 리셋
     }
 
     // 스폰 지점으로 이동시키는 함수
