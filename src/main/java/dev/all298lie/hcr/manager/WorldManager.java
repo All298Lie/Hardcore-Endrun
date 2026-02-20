@@ -1,17 +1,15 @@
 package dev.all298lie.hcr.manager;
 
 import dev.all298lie.hcr.hcr;
+import dev.all298lie.hcr.utils.PlayerUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
-import org.bukkit.advancement.Advancement;
-import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.Iterator;
+import java.util.ArrayList;
 
 public class WorldManager {
     private final hcr plugin;
@@ -26,6 +24,7 @@ public class WorldManager {
         int tryCount = data.getInt("try_count", 0);
 
         data.set("is_generating", true);
+        data.set("joined_players", new ArrayList<String>());
 
         // 1. 월드 생성 메세지 출력
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -80,8 +79,10 @@ public class WorldManager {
                 data.set("spawn_z", spawnLoc.getZ());
 
                 // 3. 접속 중인 플레이어 데이터 초기화 및 텔레포트, 스코어보드 갱신
+                ArrayList<String> players = new ArrayList<>();
+
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    resetPlayerData(p);
+                    PlayerUtil.resetPlayerData(p);
                     p.teleport(spawnLoc);
                     p.setGameMode(GameMode.SURVIVAL);
                     p.showTitle(net.kyori.adventure.title.Title.title(
@@ -89,8 +90,11 @@ public class WorldManager {
                             Component.text("§f새 월드가 생성되었습니다.")
                     ));
 
+                    players.add(p.getUniqueId().toString());
                     plugin.getScoreboardManager().updateScoreboard(p);
                 }
+
+                data.set("joined_players", players);
 
                 // 4. 기록용 파일에 데이터 최신화
                 data.set("try_count", newTryCount);
@@ -135,31 +139,6 @@ public class WorldManager {
                 plugin.saveDataFile();
             });
         });
-    }
-
-    // 플레이어 데이터 초기화 함수
-    private void resetPlayerData(Player p) {
-        p.getInventory().clear();
-        p.getEnderChest().clear();
-        p.setHealth(20.0);
-        p.setFoodLevel(20);
-        p.setSaturation(5.0f);
-        p.setExp(0f);
-        p.setLevel(0);
-
-        // 포션 초기화
-        for (PotionEffect effect : p.getActivePotionEffects()) {
-            p.removePotionEffect(effect.getType());
-        }
-
-        // 발전과제 초기화
-        Iterator<Advancement> it = Bukkit.advancementIterator();
-        while (it.hasNext()) {
-            AdvancementProgress progress = p.getAdvancementProgress((it.next()));
-            for (String criteria : progress.getAwardedCriteria()) {
-                progress.revokeCriteria(criteria);
-            }
-        }
     }
 
     // 파일(폴더)를 삭제해주는 함수

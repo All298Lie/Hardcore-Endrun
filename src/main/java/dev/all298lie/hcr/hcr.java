@@ -1,6 +1,10 @@
 package dev.all298lie.hcr;
 
+import dev.all298lie.hcr.commands.HcrCommand;
 import dev.all298lie.hcr.listeners.GameClearListener;
+import dev.all298lie.hcr.listeners.PlayerDeathListener;
+import dev.all298lie.hcr.listeners.PlayerJoinListener;
+import dev.all298lie.hcr.listeners.PortalListener;
 import dev.all298lie.hcr.manager.ScoreboardManager;
 import dev.all298lie.hcr.manager.WorldManager;
 import org.bukkit.Bukkit;
@@ -26,18 +30,23 @@ public class hcr extends JavaPlugin {
     // 플러그인이 켜졌을 경우
     @Override
     public void onEnable() {
-        // 0. 이벤트 리스너 등록
-        getServer().getPluginManager().registerEvents(new GameClearListener(this), this);
-
-        worldManager = new WorldManager(this);
-
         // 1. config.yml 파일 불러오기
         saveDefaultConfig();
 
         // 2. 기록용 파일 불러오기
         loadDataFile();
 
-        // 3. 전용 스코어보드 설정
+        worldManager = new WorldManager(this);
+
+        // 3. 이벤트 리스너 등록
+        getServer().getPluginManager().registerEvents(new GameClearListener(this), this);
+        getServer().getPluginManager().registerEvents(new PortalListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(this, worldManager), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+
+        getCommand("hcr").setExecutor(new HcrCommand(this, worldManager));
+
+        // 4. 전용 스코어보드 설정
         useScoreboard = getConfig().getBoolean("use_scoreboard", true);
 
         if (useScoreboard) {
@@ -51,7 +60,7 @@ public class hcr extends JavaPlugin {
             getLogger().info("설정이 비활성화 되어있으므로, 스코어보드를 사용하지 않습니다.");
         }
 
-        // 4. 플러그인이 처음 실행된 것인지 확인
+        // 5. 플러그인이 처음 실행된 것인지 확인
         int tryCount = dataConfig.getInt("try_count", 0);
 
         if (tryCount > 0) {
@@ -61,7 +70,7 @@ public class hcr extends JavaPlugin {
             getLogger().info("하드코어 엔더런을 진행한 기록을 확인하지 못했습니다. /hcr start 명령어 실행 시 하드코어 엔더런을 시작합니다.");
         }
 
-        // 5. 기존에 실패한 월드 삭제
+        // 6. 기존에 실패한 월드 삭제
         if (tryCount > 0) {
             worldManager.removeOldWorlds(tryCount);
         }
