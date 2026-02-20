@@ -2,3 +2,8 @@ name: Hardcore-Endrun
 version: '26.02'
 main: dev.all298lie.hcr.hcr
 api-version: '1.21'
+commands:
+  hcr:
+    description: 하드코어 엔더런 관리자 명령어
+    permission: op
+    usage: /hcr <start>

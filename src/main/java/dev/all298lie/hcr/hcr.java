@@ -1,5 +1,6 @@
 package dev.all298lie.hcr;
 
+import dev.all298lie.hcr.commands.HcrCommand;
 import dev.all298lie.hcr.listeners.GameClearListener;
 import dev.all298lie.hcr.listeners.PlayerDeathListener;
 import dev.all298lie.hcr.listeners.PortalListener;
@@ -28,12 +29,14 @@ public class hcr extends JavaPlugin {
     // 플러그인이 켜졌을 경우
     @Override
     public void onEnable() {
+        worldManager = new WorldManager(this);
+
         // 0. 이벤트 리스너 등록
         getServer().getPluginManager().registerEvents(new GameClearListener(this), this);
         getServer().getPluginManager().registerEvents(new PortalListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this, worldManager), this);
 
-        worldManager = new WorldManager(this);
+        getCommand("hcr").setExecutor(new HcrCommand(this, worldManager));
 
         // 1. config.yml 파일 불러오기
         saveDefaultConfig();
