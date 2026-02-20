@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class WorldManager {
@@ -26,6 +27,7 @@ public class WorldManager {
         int tryCount = data.getInt("try_count", 0);
 
         data.set("is_generating", true);
+        data.set("joined_players", new ArrayList<String>());
 
         // 1. 월드 생성 메세지 출력
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -80,6 +82,8 @@ public class WorldManager {
                 data.set("spawn_z", spawnLoc.getZ());
 
                 // 3. 접속 중인 플레이어 데이터 초기화 및 텔레포트, 스코어보드 갱신
+                ArrayList<String> players = new ArrayList<String>();
+
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     resetPlayerData(p);
                     p.teleport(spawnLoc);
@@ -89,8 +93,11 @@ public class WorldManager {
                             Component.text("§f새 월드가 생성되었습니다.")
                     ));
 
+                    players.add(p.getUniqueId().toString());
                     plugin.getScoreboardManager().updateScoreboard(p);
                 }
+
+                data.set("joined_players", players);
 
                 // 4. 기록용 파일에 데이터 최신화
                 data.set("try_count", newTryCount);
