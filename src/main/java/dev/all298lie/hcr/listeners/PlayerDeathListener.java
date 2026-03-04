@@ -32,6 +32,7 @@ public class PlayerDeathListener implements Listener {
         // 1. 월드 생성 이전이거나 클리어한 이후일 경우, 리턴
         if (plugin.getDataConfig().getBoolean("is_generating", false)) return;
         if (plugin.getDataConfig().getBoolean("is_cleared", false)) return;
+        if (!plugin.getDataConfig().getBoolean("is_started", false)) return;
 
         // 2. 보호 시간이 남아있을 경우, 무시
         int protectionTime = plugin.getDataConfig().getInt("protection_time", 0);
